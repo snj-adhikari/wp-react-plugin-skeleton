@@ -21,6 +21,9 @@
     "@types/wordpress__block-editor": "^11.5.14",
     "@types/wordpress__blocks": "^12.5.14",
     "@wordpress/create-block": "^4.39.0",
-    "@wordpress/scripts": "^27.6.0"
+    "@wordpress/scripts": "^27.6.0",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "ts-loader": "^9.5.1"
   }
 }
