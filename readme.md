@@ -7,7 +7,7 @@ This is a skeleton React app plugin for WordPress, built using TypeScript.
 1. Clone the repository:
 
 	```bash
-	git clone https://github.com/your-username/your-repo.git
+	git clone https://github.com/snj-adhikari/wp-react-plugin-skeleton.git
 	```
 
 2. Install the dependencies:
