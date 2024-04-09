@@ -1,0 +1,26 @@
+{
+  "name": "react-plugin-skeleton",
+  "version": "1.0.0",
+  "description": "A React plugin skeleton",
+  "scripts": {
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "create:block": "cd ./src/blocks && npx @wordpress/create-block --no-plugin --template njw-wp-typescript-block"
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@wordpress/block-editor": "^12.23.0",
+    "@wordpress/blocks": "^12.32.0",
+    "@wordpress/components": "^27.3.0",
+    "react-query": "^3.39.3"
+  },
+  "devDependencies": {
+    "@types/wordpress__block-editor": "^11.5.14",
+    "@types/wordpress__blocks": "^12.5.14",
+    "@wordpress/create-block": "^4.39.0",
+    "@wordpress/scripts": "^27.6.0"
+  }
+}
