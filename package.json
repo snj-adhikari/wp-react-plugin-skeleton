@@ -1,6 +1,6 @@
 {
   "name": "react-plugin-skeleton",
-  "version": "1.2",
+  "version": "1.2.0",
   "description": "A wordpress plugin skeleton build in react and typescript.",
   "scripts": {
     "preinstall": "composer install",
