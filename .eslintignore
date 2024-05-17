@@ -1,0 +1,4 @@
+vendor/
+build/
+dist/
+webpack.config.js

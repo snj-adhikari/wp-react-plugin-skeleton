@@ -1,6 +1,6 @@
-# React Plugin Skeleton for WordPress
+# React Plugin Skeleton Plugin for Wordpress
 
-This is a skeleton React app plugin for WordPress, built using TypeScript.
+React Plugin Skeleton is a WordPress plugin skeleton or starter block built using TypeScript, ANTD design, and React Query. 
 
 ## Installation
 
@@ -9,28 +9,48 @@ This is a skeleton React app plugin for WordPress, built using TypeScript.
 	```bash
 	git clone https://github.com/snj-adhikari/wp-react-plugin-skeleton.git
 	```
+2. Prepare Git Hook
 
-2. Install the dependencies:
+	```bash
+	npm run prepare
+	```
+
+3. Install the dependencies:
 
 	```bash
 	npm install
 	```
+4. Build the Scripts
+
+	``` bash
+		npm run build
+	```
+	
+**Note:** The code snippet below builds the necessary code that will be enqueued by the plugin on activation. All the scripts are generated in the `/dist` folder.
+
 
 ## Usage
--  Using react within wordpess using custom plugin.
+- Using React Plugin Skeleton plugin, you can find keywords in the content and make changes based on those keywords on the frontend.
 
-## Available Scripts
+### Available Scripts
 
-In the project directory, you can run:
+All available scripts on this repo : 
 
-### `npm start`
+- `preinstall`: Runs `composer install` to install the PHP dependencies before the package itself is installed. This script is executed automatically when running `npm install`.
+- `prepare`: Sets the Git hooks path to the `./git-hooks` directory.
+- `test`: Runs all test scripts in parallel.
+- `test:unit-php`: Runs the PHP unit tests using Composer.
+- `test:unit-js`: Runs the JavaScript unit tests using `wp-scripts`.
+- `lint`: Runs all lint scripts in parallel.
+- `lint:css`: Lints the CSS files using `wp-scripts`.
+- `lint:php`: Lints the PHP files using Composer.
+- `lint:ts`: Lints the TypeScript files using `wp-scripts`.
+- `format`: Runs all format scripts in parallel.
+- `format:css`: Formats the CSS files using the CSS lint script with the `--fix` option.
+- `format:ts`: Formats the TypeScript files using the TypeScript lint script with the `--fix` option.
+- `format:php`: Formats the PHP files using Composer.
+- `php`: Alias for `format:php`.
+- `start`: Starts the development server using `wp-scripts`.
+- `build`: Builds the project for production using `wp-scripts`.
+- `create:block`: Creates a new block in the `./src/blocks` directory using `@wordpress/create-block`.
 
-Runs the app in the development mode. The page will reload if you make edits. You will also see any lint errors in the console.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
-
-### `npm run create:block`
-
-This command navigates to the `./src/blocks` directory and creates a new WordPress block using the `@wordpress/create-block` package. The `--no-plugin` option tells it to only generate the block files, not the entire plugin structure. The `--template njw-wp-typescript-block` option specifies that it should use the `njw-wp-typescript-block` template for the block.

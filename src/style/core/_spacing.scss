@@ -1,0 +1,136 @@
+$base-spacing: 1rem;
+
+@mixin margin-auto() {
+	margin-inline: auto;
+}
+
+@mixin spacing($multiplier: 1) {
+	margin: $base-spacing * $multiplier;
+	padding: $base-spacing * $multiplier;
+}
+
+@mixin margin($multiplier: 1) {
+	margin: $base-spacing * $multiplier;
+}
+
+@mixin padding($multiplier: 1) {
+	padding: $base-spacing * $multiplier;
+}
+
+@mixin margin-top($multiplier: 1) {
+	margin-block-start: $base-spacing * $multiplier;
+}
+
+@mixin margin-right($multiplier: 1) {
+	margin-inline-end: $base-spacing * $multiplier;
+}
+
+@mixin margin-bottom($multiplier: 1) {
+	margin-block-end: $base-spacing * $multiplier;
+}
+
+@mixin margin-left($multiplier: 1) {
+	margin-inline-start: $base-spacing * $multiplier;
+}
+
+@mixin padding-top($multiplier: 1) {
+	padding-block-start: $base-spacing * $multiplier;
+}
+
+@mixin padding-right($multiplier: 1) {
+	padding-inline-end: $base-spacing * $multiplier;
+}
+
+@mixin padding-bottom($multiplier: 1) {
+	padding-block-end: $base-spacing * $multiplier;
+}
+
+@mixin padding-left($multiplier: 1) {
+	padding-inline-start: $base-spacing * $multiplier;
+}
+
+
+$spacing-multipliers: (
+	1: 1,
+	2: 2,
+	3: 3
+);
+
+@each $multiplier, $value in $spacing-multipliers {
+	.p-#{$multiplier} {
+
+		@include padding($value);
+	}
+	.m-#{$multiplier} {
+
+		@include margin($value);
+	}
+
+	.mt-#{$multiplier} {
+
+		@include margin-top($value);
+	}
+
+	.mb-#{$multiplier} {
+
+		@include margin-bottom($value);
+	}
+
+	.ml-#{$multiplier} {
+
+		@include margin-left($value);
+	}
+
+	.mr-#{$multiplier} {
+
+		@include margin-right($value);
+	}
+
+	.mx-#{$multiplier} {
+
+		@include margin-left($value);
+		@include margin-right($value);
+	}
+	.my-#{$multiplier} {
+
+		@include margin-top($value);
+		@include margin-bottom($value);
+	}
+
+	.pl-#{$multiplier} {
+
+		@include padding-left($value);
+	}
+
+	.pt-#{$multiplier} {
+
+		@include padding-top($value);
+	}
+
+	.pb-#{$multiplier} {
+
+		@include padding-bottom($value);
+	}
+
+	.pr-#{$multiplier} {
+
+		@include padding-right($value);
+	}
+
+	.px-#{$multiplier} {
+
+		@include padding-left($value);
+		@include padding-right($value);
+	}
+
+	.py-#{$multiplier} {
+
+		@include padding-top($value);
+		@include padding-bottom($value);
+	}
+}
+
+.mx-auto {
+
+	@include margin-auto();
+}

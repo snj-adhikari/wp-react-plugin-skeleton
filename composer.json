@@ -1,0 +1,51 @@
+{
+	"name":"snj-adhikari/wp-react-plugin-skeleton",
+	"type" : "wordpress-plugin",
+	"description": "React Plugin Skeleton starter kit with all lint and test setup",
+	"version": "1.0.0",
+	"license": "proprietary",
+	"prefer-stable": true,
+	"minimum-stability": "dev",
+    "config": {
+		"sort-packages": true,
+		"process-timeout": 600,
+		"platform": {
+			"php": "8.2"
+		},
+		"allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+	},
+	"autoload": {
+        "psr-4": {"WpReactSkeleton\\": "./"}
+    },
+	"autoload-dev": {
+        "psr-4": {
+            "WpReactSkeleton\\Tests\\": "__PHP__TEST/"
+        }
+    },
+	"require-dev": {
+		"10up/wp_mock": "dev-trunk",
+		"automattic/vipwpcs": "^3.0",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"phpunit/phpunit": "^9.6",
+		"squizlabs/php_codesniffer": "^3.9",
+		"wp-coding-standards/wpcs": "^3.1"
+	},
+	"scripts": {
+		"lint": [
+			"@composer lint:plugin"
+		],
+		"lint:plugin": "phpcs --standard=phpcs.xml.dist",
+		"format": [
+			"@composer format:plugin"
+		],
+		"format:plugin": "phpcbf",
+		"verify": [
+			"composer validate --no-check-all --no-check-publish --strict"
+		],
+		"test": [
+			"vendor/bin/phpunit"
+		]
+	}
+}

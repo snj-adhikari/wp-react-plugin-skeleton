@@ -1,0 +1,15 @@
+.flex {
+	display: flex;
+	flex-wrap: wrap;
+
+	&.center {
+		justify-content: center;
+		align-self: center;
+		align-items: center;
+	}
+}
+
+.card {
+	background-color: $white-color;
+	border: 1px solid $dark-color;
+}

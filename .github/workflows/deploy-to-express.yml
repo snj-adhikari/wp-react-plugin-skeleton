@@ -1,0 +1,59 @@
+name: Manual - Deploy to WP Engine
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Select which Express - WP environment
+        options:
+        - site_pref
+jobs:
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    env:
+      local-directory: ./
+      remote-directory: wp-content/plugins/wp-react-plugin-skeleton/
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2' # Set the PHP version to 8.2
+
+      # https://github.com/actions/setup-node/issues/32
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ steps.nvm.outputs.NVMRC }}
+
+      - name: Install dependencies
+        run: npm i -azvr --inplace --delete --exclude=".*" --exclude-from=.deployignore
+
+      - name: Check Lint formatting
+        run: npm run lint
+
+      - name: Run Automation Tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to WP Engine - ${{ github.event.inputs.environment }}
+        uses: wpengine/github-action-wpe-site-deploy@v3
+        with:
+          WPE_ENV: ${{ github.event.inputs.environment }}
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          SRC_PATH: "${{ env.local-directory }}"
+          REMOTE_PATH: "${{ env.remote-directory }}"
+          FLAGS: '-azqr --inplace --delete --exclude=".*" --exclude-from=.deployignore'
+          CACHE_CLEAR: true
+
