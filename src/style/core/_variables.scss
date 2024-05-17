@@ -1,0 +1,29 @@
+// Colors
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$success-color: #28a745;
+$danger-color: #dc3545;
+$info-color: #17a2b8;
+$warning-color: #ffc107;
+$light-color: #f8f9fa;
+$dark-color: #343a40;
+$white-color: #fff;
+// Font Sizes
+$base-font-size: 16px; // Define the base font size in pixels
+
+$small-font-size: $base-font-size * 0.875; // 14px
+$medium-font-size: $base-font-size; // 16px
+$large-font-size: $base-font-size * 1.125; // 18px
+
+
+// Other Variables
+$border-radius: 4px;
+$box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+$transition-duration: 0.3s;
+
+
+// Breakpoints
+$mobile-breakpoint: 576px;
+$tablet-breakpoint: 768px;
+$desktop-breakpoint: 992px;
+$large-desktop-breakpoint: 1200px;

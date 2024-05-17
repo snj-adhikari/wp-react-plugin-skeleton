@@ -1,0 +1,28 @@
+
+// Define your typography styles
+$font-size-base: $base-font-size; // Use the font size variable from _variables.scss
+
+// Default typography styles
+h1 {
+	font-size: $font-size-base * 2;
+	font-weight: 700;
+}
+
+h2 {
+	font-size: $font-size-base * 1.5;
+	font-weight: 700;
+}
+
+h3 {
+	font-size: $font-size-base * 1.25;
+	font-weight: 700;
+}
+
+p {
+	font-size: $font-size-base;
+	line-height: 1.5;
+}
+
+// Additional typography styles...
+
+// Customize other typography elements as needed

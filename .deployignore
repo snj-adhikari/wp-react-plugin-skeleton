@@ -1,0 +1,116 @@
+# React SRC
+src/*
+
+# composer vendor
+vendor/*
+vendor/*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/*
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Output of `npm pack`
+*.tgz
+
+# Output of `wp-scripts plugin-zip`
+*.zip
+
+# dotenv environment variables file
+.env
+
+# Ignore PHPCS Configuration file
+phpcs.xml
+phpcs.xml.dist
+
+# Ignore the php test file
+__PHP__TEST
+
+# Ignore ESLint configuration files
+.eslintrc
+.eslintignore
+
+# Ignore PHPCS configuration files
+.phpcs.xml
+.phpcs
+.phpcs.xml.dist
+
+# Ignore PHPUnit configuration files
+phpunit.xml
+phpunit.xml.dist
+
+# Ignore TypeScript configuration file
+tsconfig.json
+
+# Ignore Webpack configuration file
+webpack.config.js
+tsconfig.json
+
+# Ignore read me file
+README.md
+
+# Ignore all files taht starts with .
+.*
+
+# Ignore package.json file
+package.json
+package.lock.json
+
+#Ignore composer.json file
+composer.json
+composer.lock
+
+# Ignore vscode configuration files
+.vscode/
+
+# Ignore yarn configuration files
+.yarnrc
+.yarn.lock
+
+# Ignore Prettier configuration file
+.prettierrc
+.prettierignore
+
+# Ignore .nvmrc file
+.nvmrc
+
+# Ignore lint-staged configuration file
+.lintstagedrc
+
+# Ignore EditorConfig file
+.editorconfig
+
+# Ignore Git hooks directory
+git-hooks/
+
+# Ignore GitHub directory
+.github/
+.gitignore
+.gitattributes
+
+#Ignore editor configure
+.editorconfig
+.deployignore
+
+
+
+#ignore styleint configuration file
+.stylelintrc.json
+.styleintignore

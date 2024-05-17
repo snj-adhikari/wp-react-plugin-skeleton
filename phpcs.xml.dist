@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Theme Coding Standards">
+	<arg name="extensions" value="php" />
+	<arg name="colors" />
+	<arg name="parallel" value="16" />
+	<arg value="sp" />
+
+	<!-- Lint all PHP files in the project directory by default. -->
+	<file>.</file>
+
+	<!-- Ensure all code works with PHP 8.2 and later. -->
+	<!-- Since this is client code we can control the PHP version. -->
+	<rule ref="PHPCompatibilityWP" />
+	<config name="testVersion" value="8.2-" />
+
+	<rule ref="WordPress-Core">
+		<exclude name="Generic.Commenting.DocComment.MissingShort" />
+		<exclude name="WordPress.PHP.YodaConditions.NotYoda" />
+		<exclude name="Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure" />
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
+		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.Found" />
+	</rule>
+
+	<!-- Force short array syntax -->
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax.Found">
+		<type>warning</type>
+	</rule>
+
+	<rule ref="WordPress" />
+	<rule ref="WordPress-Extra" />
+	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress-VIP-Go">
+	    <exclude name="PSR2.Classes.PropertyDeclaration.Underscore" />
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="express" />
+			</property>
+		</properties>
+	</rule>
+
+	<exclude-pattern>*/assets/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/tests/coverage/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/*.asset.php</exclude-pattern>
+</ruleset>

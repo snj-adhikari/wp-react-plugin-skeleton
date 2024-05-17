@@ -1,0 +1,41 @@
+@mixin responsive-breakpoint($breakpoint, $option: "max") {
+	$breakpoint-value: map.get($breakpoints, $breakpoint);
+
+	@if $option == "max" {
+
+		@media (max-width: $breakpoint-value) {
+			@content;
+		}
+	} @else if $option == "min" {
+
+		@media (min-width: $breakpoint-value) {
+			@content;
+		}
+	} @else {
+		// Handle invalid option value
+		@error "Invalid option value: #{$option}. Please use 'max' or 'min'.";
+	}
+}
+
+
+@mixin mobile-only {
+
+	@include responsive-breakpoint($mobile-breakpoint, "max") {
+		@content;
+	}
+}
+
+@mixin desktop-only {
+
+	@include responsive-breakpoint($desktop-breakpoint, "min") {
+		@content;
+	}
+}
+
+@mixin mobile-and-tablet {
+
+	@include responsive-breakpoint($tablet-breakpoint, "max") {
+		@content;
+	}
+}
+

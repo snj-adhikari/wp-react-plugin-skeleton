@@ -1,0 +1,117 @@
+# React SRC
+src export-ignore
+src/* export-ignore
+
+# composer vendor
+vendor export-ignore
+vendor/* export-ignore
+
+# Logs
+logs export-ignore
+*.log export-ignore
+npm-debug.log* export-ignore
+yarn-debug.log* export-ignore
+yarn-error.log* export-ignore
+
+# Coverage directory used by tools like istanbul
+coverage export-ignore
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build export-ignore
+build/* export-ignore
+
+# Ignore node_modules directory
+node_modules export-ignore
+node_modules/* export-ignore
+
+# Optional npm cache directory
+.npm export-ignore
+
+# Optional eslint cache
+.eslintcache export-ignore
+
+# Output of `npm pack`
+*.tgz export-ignore
+
+# Output of `wp-scripts plugin-zip`
+*.zip export-ignore
+
+# dotenv environment variables file
+.env export-ignore
+
+# Ignore the php test file
+__PHP__TEST export-ignore
+__PHP__TEST/* export-ignore
+
+# Ignore ESLint configuration files
+.eslintrc export-ignore
+.eslintignore export-ignore
+
+# Ignore PHPCS configuration files
+phpcs.xml export-ignore
+phpcs.xml.dist export-ignore
+.phpcs export-ignore
+
+# Ignore PHPUnit configuration files
+phpunit.xml export-ignore
+phpunit.xml.dist export-ignore
+
+# Ignore TypeScript configuration file
+tsconfig.json export-ignore
+
+# Ignore Webpack configuration file
+webpack.config.js export-ignore
+
+# Ignore package.json file
+package.json export-ignore
+package-lock.json export-ignore
+
+# Ignore composer.json file
+composer.json export-ignore
+composer.lock export-ignore
+
+# Ignore all the files that starts with '.'
+.* export-ignore
+
+# Ignore Prettier configuration file
+.prettierrc.json export-ignore
+.prettierignore export-ignore
+
+# Ignore .nvmrc file
+.nvmrc export-ignore
+
+# Ignore lint-staged configuration file
+.lintstagedrc.js export-ignore
+
+# Ignore EditorConfig file
+.editorconfig export-ignore
+
+
+#ignore vs code configurtion
+.vscode export-ignore
+.vscode/* export-ignore
+
+# Ignore Git hooks directory
+git-hooks export-ignore
+git-hooks/* export-ignore
+
+#ignore .git folder
+.git export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+
+# Ignore deploy ignore file
+.deployignore export-ignore
+
+#Ignore readme file
+README.md export-ignore
+
+# Ignore GitHub directory
+.github export-ignore
+.github/* export-ignore
+
+# ingore stylint
+.stylintignore export-ignore
+.stylelintrc export-ignore
+
+

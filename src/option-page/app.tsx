@@ -1,44 +1,54 @@
 import React, { useState } from 'react';
-import { TextControl, Button } from '@wordpress/components';
-
-import { useQuery } from 'react-query';
-import { fetchPosts } from './helpers/api';
+import CustomTabs from '../components/CustomTabs';
+import SearchFeature from '../components/SearchFeature';
+import WelcomePanel from '../components/WelcomePanel';
+import PostTypeSelector from '../components/PostTypeSelector';
+import { defaultType, PostTypeKey } from '../helpers/types';
 
 const App: React.FC = () => {
-	const [inputValue, setInputValue] = useState('');
-	const handleInputChange = (value: string) => {
-		setInputValue(value);
-	};
-	const handleSave = () => {
-		// Save the input value
-		console.log('Input value:', inputValue);
+	const [postType, setPostType] = useState<PostTypeKey[]>(defaultType);
+	const postTypeSelect = (value: PostTypeKey[]) => {
+		setPostType(value);
 	};
 
-	const { data: posts, isLoading, isError } = useQuery('posts', fetchPosts);
-
-	if (isLoading) {
-		return <div>Loading...</div>;
-	}
-
-	if (isError) {
-		return <div>Error loading posts</div>;
-	}
+	const tabs = [
+		{
+			name: 'Keyword Finder',
+			component: (
+				<>
+					<h4>Sample Search Feature</h4>
+					<SearchFeature supportedPostTypes={postType} />
+				</>
+			),
+		},
+		{
+			name: 'Keyword Replacer',
+			component: (
+				<>
+					<h4>Keyword to replace</h4>
+					<p>Coming soon</p>
+				</>
+			),
+		},
+	];
 
 	return (
-		<div>
-			<h1>Plugin Page Settings</h1>
-			<TextControl
-				label="Sample Text Input"
-				value={inputValue}
-				onChange={handleInputChange}
+		<>
+			<WelcomePanel
+				title="Welcome to Wp Skeleton React Plugin"
+				description="This is a plugin to help you find and replace keywords in your content."
 			/>
-			<Button onClick={handleSave}>Save</Button>
-
-			<h2>Posts</h2>
-			{posts.map((post: any) => (
-				<div key={post.id}>{post.title}</div>
-			))}
-		</div>
+			<div className="mx-1">
+				<div>
+					<span> Select Post Type : </span>
+					<PostTypeSelector
+						onSelect={postTypeSelect}
+						defaults={defaultType}
+					/>
+				</div>
+				<CustomTabs tabs={tabs} />
+			</div>
+		</>
 	);
 };
 export default App;
