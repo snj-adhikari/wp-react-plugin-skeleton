@@ -8,7 +8,7 @@
  * @package wp-react-plugin-skeleton
  */
 
-namespace WpReactSkeleton\Tests;
+namespace PluginSkeleton\Tests;
 
 use WP_Mock\Tools\TestCase;
 
@@ -44,7 +44,7 @@ class ReactPluginSkeletonTest extends TestCase {
 	 * (JavaScript and CSS) with the correct dependencies and version.
 	 */
 	public function test_enqueue_frontend_assets_with_valid_asset_file() {
-		$asset_file_path = WP_REACT_SKELETON_DIR . 'dist/frontend.asset.php';
+		$asset_file_path = njw_skeleton_get_config( 'PLUGIN_DIR_PATH' ) . 'dist/frontend.asset.php';
 		// Check if the file exists, if not, set default values.
 		$asset_file = [
 			'dependencies' => [],
