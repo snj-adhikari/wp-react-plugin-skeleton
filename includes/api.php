@@ -9,7 +9,7 @@
 /**
  * REST API Proxy to consume gateway service.
  * reason: CORS cannot be enabled on the gateway service API.
- * URL: <domain>/aremedia-trial-team/api-proxy/<endpoint>.
+ * URL: <domain>/njw-skeleton/api-proxy/<endpoint>.
  * accepts up to 3 nested paths for now. Just add more if you need more.
  *
  * Also create user query endpoint for search user with meta key.

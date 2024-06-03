@@ -23,7 +23,7 @@ function njw_skeleton_define_constant_with_prefix( $constant_name, $value ) {
 	}
 }
 
-njw_skeleton_define_constant_with_prefix( 'NAMESPACE', 'am-tr' ); // Prefix starts with `NJW_SKELETON_'.
+njw_skeleton_define_constant_with_prefix( 'NAMESPACE', 'njw-skeleton' ); // Prefix starts with `NJW_SKELETON_'.
 njw_skeleton_define_constant_with_prefix( 'ROUTE', 'api-proxy' ); // Prefix starts with `NJW_SKELETON_' .
 njw_skeleton_define_constant_with_prefix( 'SETTINGS_NAME', 'am-trx-settings' ); // Prefix starts with `NJW_SKELETON_' .
 
