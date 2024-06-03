@@ -27,4 +27,4 @@ WP_Mock::userFunction(
 	]
 );
 
-require_once __DIR__ . '/../wp-react-plugin-skeleton.php';
+require_once __DIR__ . '/wp-react-plugin-skeleton.php';
