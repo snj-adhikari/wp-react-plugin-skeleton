@@ -143,6 +143,6 @@ class ReactPluginSkeletonTest extends TestCase {
 		$output = ob_get_clean();
 
 		// Check the output.
-		$this->assertEquals( '<div id="am-plugin-page"></div>', $output );
+		$this->assertEquals( '<div id="skeleton-react-plugin-page"></div>', $output );
 	}
 }
