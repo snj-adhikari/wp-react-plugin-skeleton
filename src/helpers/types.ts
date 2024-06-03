@@ -1,7 +1,11 @@
+//  eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type apiEndpointType = {
 	method: string;
 	name: string;
-	prefix: string;
+	prefix?: string;
+	url?: string | null | undefined;
+	body?: any;
+	headers?: any;
 };
 
 export type QueryParamTypes = {
@@ -11,6 +15,7 @@ export type QueryParamTypes = {
 	orderby?: string;
 	order?: 'asc' | 'desc';
 };
+
 
 export interface SearchResultType {
 	id: number;
