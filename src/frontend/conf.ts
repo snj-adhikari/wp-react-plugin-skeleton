@@ -1,3 +1,4 @@
+import { apiEndpointType } from '../helpers/types';
 
 export const elementId = 'page-content';
 

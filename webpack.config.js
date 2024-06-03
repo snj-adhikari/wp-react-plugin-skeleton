@@ -5,12 +5,21 @@ const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 module.exports = {
 	...defaultConfig,
 	entry: {
+		cms: [
+			'./src/cms/index.tsx',
+			'./src/style/cms.scss',
+		],
+		editor: [
+			'./src/editor/index.ts',
+			'./src/style/editor.scss',
+		],
 		'option-page': [
-			'./src/option-page/index.tsx',
+			'./src/option-page/index.ts',
 			'./src/style/option-page.scss',
 		],
 		frontend: ['./src/frontend/index.ts', './src/style/frontend.scss'],
 		blocks: ['./src/blocks/index.ts', './src/style/blocks.scss'],
+
 	},
 	output: {
 		filename: '[name].js',
