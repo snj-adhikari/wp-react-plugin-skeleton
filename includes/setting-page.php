@@ -70,7 +70,7 @@ function njw_skeleton_options_settings_field() {
 	$config_value = njw_skeleton_api_config();
 
 	$api_config_constant_name = [
-		'API_PROXY_URL'   => 'API Proxy URl',
+		'API_PROXY_URL' => 'API Proxy URl',
 	];
 
 	?>
