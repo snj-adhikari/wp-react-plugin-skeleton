@@ -57,11 +57,11 @@ class ReactPluginSkeletonTest extends TestCase {
 
 		WP_Mock::userFunction( 'wp_enqueue_script' )
 		->once()
-		->with( 'frontend-script', 'dist/frontend.js', $asset_file['dependencies'], $asset_file['version'], true )
+		->with( 'frontend-script',  njw_skeleton_get_config( 'PLUGIN_DIR_URL' ). 'dist/frontend.js', $asset_file['dependencies'], $asset_file['version'], true )
 		->andReturnUsing(
 			function ( $arg1, $arg2, $arg3, $arg4, $arg5 ) use ( $asset_file ) {
 				$this->assertEquals( 'frontend-script', $arg1 );
-				$this->assertEquals( 'dist/frontend.js', $arg2 );
+				$this->assertEquals( njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/frontend.js', $arg2 );
 				$this->assertEquals( $asset_file['dependencies'], $arg3 );
 				$this->assertEquals( $asset_file['version'], $arg4 );
 				$this->assertEquals( true, $arg5 );
@@ -70,13 +70,13 @@ class ReactPluginSkeletonTest extends TestCase {
 
 		WP_Mock::userFunction( 'wp_enqueue_style' )
 		->once()
-		->with( 'frontend-style', 'dist/frontend.css', $asset_file['dependencies'], $asset_file['version'] )
+		->with( 'frontend-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/frontend.css', $asset_file['dependencies'], $asset_file['version'] )
 		->andReturnUsing(
 			function ( $arg1, $arg2, $arg3, $arg4 ) use ( $asset_file ) {
 				$this->assertEquals( 'frontend-style', $arg1 );
 				$this->assertEquals( $asset_file['dependencies'], $arg3 );
 				$this->assertEquals( $asset_file['version'], $arg4 );
-				$this->assertEquals( 'dist/frontend.css', $arg2 );
+				$this->assertEquals( njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/frontend.css', $arg2 );
 			}
 		);
 
