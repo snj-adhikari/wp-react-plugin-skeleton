@@ -57,7 +57,7 @@ class ReactPluginSkeletonTest extends TestCase {
 
 		WP_Mock::userFunction( 'wp_enqueue_script' )
 		->once()
-		->with( 'frontend-script',  njw_skeleton_get_config( 'PLUGIN_DIR_URL' ). 'dist/frontend.js', $asset_file['dependencies'], $asset_file['version'], true )
+		->with( 'frontend-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/frontend.js', $asset_file['dependencies'], $asset_file['version'], true )
 		->andReturnUsing(
 			function ( $arg1, $arg2, $arg3, $arg4, $arg5 ) use ( $asset_file ) {
 				$this->assertEquals( 'frontend-script', $arg1 );
