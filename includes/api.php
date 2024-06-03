@@ -96,11 +96,11 @@ function njw_skeleton_gateway_endpoint( $proxy_url ) {
 function njw_skeleton_api_proxy( $req ) {
 
 	try {
-		$method                  = $req->get_method();
-		$njw_skeleton_options 	 = njw_skeleton_api_config();
-		$njw_skeleton_api    	 = array_key_exists( 'api_gateway_url', $njw_skeleton_options ) ? $njw_skeleton_options['api_gateway_url'] : 'https://services.sit.digital.aremedia.net.au/trackonomics/api';
-		$am_tr_access_key        = array_key_exists( 'api_access_key', $njw_skeleton_options ) ? $njw_skeleton_options['api_access_key'] : '898f8bcc906c497d8ed8a224b17ff2d8';
-		$headers                 = [
+		$method               = $req->get_method();
+		$njw_skeleton_options = njw_skeleton_api_config();
+		$njw_skeleton_api     = array_key_exists( 'api_gateway_url', $njw_skeleton_options ) ? $njw_skeleton_options['api_gateway_url'] : 'https://services.sit.digital.aremedia.net.au/trackonomics/api';
+		$am_tr_access_key     = array_key_exists( 'api_access_key', $njw_skeleton_options ) ? $njw_skeleton_options['api_access_key'] : '898f8bcc906c497d8ed8a224b17ff2d8';
+		$headers              = [
 			'x-service-access-key: ' . $am_tr_access_key,
 			'Content-Type: application/json',
 			'Cache-Control: no-cache',
