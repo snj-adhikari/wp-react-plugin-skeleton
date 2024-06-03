@@ -51,7 +51,7 @@ function wp_skeleton_enqueue_admin_assets() {
 		$asset_file = include $asset_file_path;
 	}
 	wp_enqueue_script( 'admin-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/blocks.js', $asset_file['dependencies'], $asset_file['version'], true );
-	wp_enqueue_style( 'admin-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/block.css', [], $asset_file['version'] );
+	wp_enqueue_style( 'admin-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/blocks.css', [], $asset_file['version'] );
 }
 add_action( 'admin_enqueue_scripts', 'wp_skeleton_enqueue_admin_assets' );
 
@@ -146,6 +146,6 @@ add_action( 'admin_menu', 'wp_skeleton_add_custom_menu_page' );
  * @since 1.0.0
  */
 function wp_skeleton_custom_page_callback() {
-	echo '<div id="am-plugin-page"></div>';
+	echo '<div id="skeleton-react-plugin-page"></div>';
 	// Add your custom page content here.
 }
