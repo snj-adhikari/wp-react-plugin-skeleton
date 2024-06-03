@@ -7,7 +7,7 @@ jest.mock('react-dom', () => ({ render: jest.fn() }));
 describe('Index', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
-        div.id = 'react-plugin-page';
+        div.id = 'skeleton-react-plugin-page';
         document.body.appendChild(div);
 
         require('./index.tsx'); // replace with actual path
