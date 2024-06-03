@@ -1,2 +1,7 @@
-@import "./core/init";
-@import "./wp-overide/init";
+.njw-skl-field {
+	margin: 10px;
+
+	.input {
+		min-width: 450px;
+	}
+}
