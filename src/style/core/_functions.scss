@@ -1,0 +1,53 @@
+@use "sass:math";
+
+/*
+ * rem()
+ * Converts px values to rem, starting from the base font-size.
+ *
+ * When to use which?
+ * Should this value scale up as the user increases their browser’s
+ * default font size?
+ * If the value should increase then rem is usually the way to go.
+ * Otherwise it’s px.
+ *
+ * @see: https://www.joshwcomeau.com/css/surprising-truth-about-pixels-and-accessibility/
+ *
+ * Usage:
+ * property: rem(32)
+ */
+$htmlFontSize: 16;
+
+@function _divide($a, $b) {
+
+	@return math.div($a, $b);
+}
+
+/*
+ * Strips unneeded units from being passed in, like "px".
+ */
+@function _stripunit($value) {
+
+	@return math.div( $value, ($value * 0 + 1) );
+}
+
+@function rem($value) {
+	$remValue: math.div(_stripunit($value), _stripunit($htmlFontSize)) + rem;
+
+	@return $remValue;
+}
+
+/*
+ * asset()
+ * Returns path to file inside of the assets folder.
+ * Should not include trailing slash
+ *
+ * Usage:
+ * background-image: asset( "svg/icons/facebook.svg" );
+ * src: asset("font/open-sans.woff2") format("woff2");
+ */
+
+@function asset($file) {
+
+	// The path should be relative to the `dist/` folder.
+	@return url("../public/" + $file);
+}

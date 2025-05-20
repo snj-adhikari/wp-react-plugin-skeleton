@@ -1,24 +1,50 @@
 // Colors
-$primary-color: #007bff;
-$secondary-color: #6c757d;
-$success-color: #28a745;
-$danger-color: #dc3545;
-$info-color: #17a2b8;
-$warning-color: #ffc107;
-$light-color: #f8f9fa;
-$dark-color: #343a40;
-$white-color: #fff;
-// Font Sizes
-$base-font-size: 16px; // Define the base font size in pixels
+$primary-color: var(--wp--preset--color--primary);
+$secondary-color:var(--wp--preset--color--secondary);
+$success-color: var(--wp--preset--color--success);
+$danger-color: var(--wp--preset--color--error);
+$info-color: var(--wp--preset--color--info);
+$warning-color: var(--wp--preset--color--warning);
+$light-color: var(--wp--preset--color--light);
+$dark-color: var(--color--neutral-200);
+$white-color: var(--wp--preset--color--white);
 
-$small-font-size: $base-font-size * 0.875; // 14px
-$medium-font-size: $base-font-size; // 16px
-$large-font-size: $base-font-size * 1.125; // 18px
+$admin-failure-color: var(--color-failure);
+
+$darker-color: var(--color--darker);
+$medium-light-color: var(--color--neutral-300);
+$soft-light-color: var(--color--medium-light);
+
+$neutral-color: var(--color--neutral-200);
+$color-neutral-grey: var(--color--neutral-grey);
+
+$color-box-shadow: #00000026;
+
+
+// Express font size variables :) - default one  for reference.
+// --font-size--xs: 0.75rem;
+// --font-size--s: 0.875rem;
+// --font-size--m: 1rem;
+// --font-size--l: 1.125rem;
+// --font-size--xl: 1.5rem;
+// --font-size--2xl: 2rem;
+// --font-size--3xl: 2.25rem;
+// --font-size--4xl: 3rem;
+// --font-size--5xl: 4rem;
+$font-size-xs: var(--font-size--xs);
+$font-size-s: var(--font-size--s);
+$font-size-m: var(--font-size--m);
+$font-size-l: var(--font-size--l);
+$font-size-xl: var(--font-size--xl);
+$font-size-2xl: var(--font-size--2xl);
+$font-size-3xl: var(--font-size--3xl);
+$font-size-4xl: var(--font-size--4xl);
+$font-size-5xl: var(--font-size--5xl);
 
 
 // Other Variables
-$border-radius: 4px;
-$box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+$border-radius: .625rem;
+$box-shadow: 0 2px 4px $light-color;
 $transition-duration: 0.3s;
 
 

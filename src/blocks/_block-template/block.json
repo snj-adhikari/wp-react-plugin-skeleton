@@ -1,0 +1,20 @@
+{
+    "apiVersion": 3,
+    "name": "aredeals/block-template",
+    "title": "Block Template",
+    "category": "widgets",
+    "icon": "smiley",
+    "description": "A Sample block template",
+    "supports": {
+        "html": false
+    },
+    "attributes": {
+        "content": {
+            "type": "string",
+            "source": "html",
+            "selector": "p"
+        }
+    },
+    "textdomain": "aredeals",
+    "editorScript": "file:./index.tsx"
+}

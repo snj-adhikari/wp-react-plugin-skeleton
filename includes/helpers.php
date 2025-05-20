@@ -101,3 +101,71 @@ function njw_skeleton_log( $message ) {
 		}
 	}
 }
+
+
+/**
+ * Load an asset file or return the default configuration.
+ *
+ * @param string $file_path Path to the asset file.
+ * @return array Asset file configuration.
+ */
+function njw_skeleton_load_asset_file( $file_path ) {
+	$default_asset_file = njw_skeleton_get_default_asset_file();
+
+	if ( file_exists( $file_path ) ) {
+		return include $file_path;
+	}
+
+	return $default_asset_file;
+}
+
+
+/**
+ * Get the default asset file configuration.
+ *
+ * @return array Default asset file configuration.
+ */
+function njw_skeleton_get_default_asset_file() {
+	return [
+		'dependencies' => [],
+		'version'      => AM_AREDEALS_ASSET_VERSION,
+	];
+}
+
+
+/**
+ * Get the gateway endpoint from the proxy url.
+ * the endpoint should be everything after /aremedia-trial-team/api-proxy/.
+ * eg: if URL is https://beautyheaven.com.au/wp-json/aremedia-trial-team/api-proxy/trials/23, then endpoint will be "/trials/23".
+ *
+ * @param string $proxy_url The URL of the proxy.
+ * @return string The endpoint of the proxy URL.
+ */
+function njw_skeleton_gateway_endpoint( $proxy_url ) {
+	$path     = '/' . njw_skeleton_get_config( 'NAMESPACE' ) . '/' . njw_skeleton_get_config( 'PROXY_ROUTE' ) . '/';
+	$endpoint = strstr( $proxy_url, $path );
+	return str_replace( $path, '', $endpoint );
+}
+
+
+
+/**
+ * Get the value of a configuration constant for proxy from cms
+ *
+ * @param string $script_name The name of the script.
+ */
+function njw_skeleton_expose_js_variable( $script_name ) {
+	// Localize the script with new data.
+	$api_config = njw_skeleton_api_config();
+
+	wp_localize_script(
+		$script_name,
+		'njwSkeletonConfig',
+		[
+			'pluginRoute'   => njw_skeleton_get_config( 'NAMESPACE' ) . '/' . am_arelink_get_config( 'NORMAL_ROUTE' ),
+			'amAlProxyUrl'  => $api_config['API_PROXY_URL'],
+			'nonce'         => wp_create_nonce( 'wp_rest' ),
+			'postType'      => get_post_type(),
+		]
+	);
+}

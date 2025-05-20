@@ -1,6 +1,6 @@
 {
-  "name": "react-plugin-skeleton",
-  "version": "1.2.0",
+  "name": "njw-skeleton-wp-react-plugin",
+  "version": "1.0.0",
   "description": "A wordpress plugin skeleton build in react and typescript.",
   "scripts": {
     "preinstall": "composer install",
@@ -19,7 +19,9 @@
     "php": "composer format",
     "start": "wp-scripts start",
     "build": "wp-scripts build",
-    "create:block": "cd ./src/blocks && npx @wordpress/create-block --no-plugin --template njw-wp-typescript-block"
+	"sync": "fswatch -o . | xargs -n1 -I{} ./sync.sh $1",
+	"sync:version": "echo $(node ./src/sync-version.mjs)",
+    "create:block": "sh create-block.sh"
   },
   "main": "index.js",
   "keywords": [],

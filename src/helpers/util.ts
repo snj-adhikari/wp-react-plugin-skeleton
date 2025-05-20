@@ -1,11 +1,27 @@
-// Function to retrieve all URLs from a specific HTML element
-export const retrieveUrlsFromElement = (elementId: string): string[] => {
-	const element = document.getElementById(elementId);
-	if (element) {
-		const urls = Array.from(element.getElementsByTagName('a')).map(
-			(a) => a.href
-		);
-		return urls;
-	}
-	return [];
-};
+export const debugLog = (() => {
+	let debugModeLogged = false;
+	return (
+		message: object | string | any[],
+		detail?: object | boolean | number | string | any[],
+		error = false
+	) => {
+		const params = new URLSearchParams(window.location.search);
+		if (params.get('am_aredeal_debug') === 'true') {
+			if (!debugModeLogged) {
+				console.log(
+					'%cDebug mode is enabled',
+					'color: purple',
+					'Aremedia Aredeals Plugin'
+				);
+				debugModeLogged = true;
+			}
+			if (Array.isArray(message)) {
+				console.table(message);
+			} else if (error) {
+				console.error(message, detail);
+			} else {
+				console.log(message, detail || '');
+			}
+		}
+	};
+})();

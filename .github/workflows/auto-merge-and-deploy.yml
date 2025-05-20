@@ -1,0 +1,224 @@
+name: Auto Merge and Deployment Workflow
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+jobs:
+  auto-merge-and-push:
+    name: Auto Merge and Push to develop based on Label
+    if: github.event.label.name == 'In dev'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.AREMEDIA_PERSONAL_ACCESS_TOKEN }}
+
+      - name: Merge PR into develop
+        run: |
+          git config --global user.name 'Digital Developers'
+          git config --global user.email 'digitaldevelopers@aremedia.com.au'
+          git fetch origin
+          git checkout develop
+          git merge --no-ff ${{ github.head_ref }} -m "Merging PR #${{ github.event.pull_request.number }}"
+          git push origin develop
+
+  deploy:
+    name: Deploy to WP Engine based on Label
+    runs-on: ubuntu-latest
+
+    if: github.event.label.name == 'Deploy to Dev' || github.event.label.name == 'Deploy to Staging'
+
+    env:
+      local-directory: ./
+      WPE_ENV: ${{ github.event.label.name == 'Deploy to Dev' && 'aremediaanzdev' || 'aremediaanzstg' }}
+      BRANCH: ${{ github.event.label.name == 'Deploy to Dev' && 'develop' || 'main' }}
+      ENVIRONMENT: ${{ github.event.label.name == 'Deploy to Dev' && 'DEV' || 'STAGING' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.BRANCH }}
+          fetch-depth: 0
+
+      # === 🔔 Notify Teams - Starting Deployment ===
+      - name: Notify Teams - Starting Deployment
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**🚀 Starting Deployment to '"$ENVIRONMENT"'**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "🚧 Please avoid deploying other branches to this environment until this deployment is completed.",
+                      "wrap": true,
+                      "size": "Medium",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "Branch: '"$BRANCH"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "Repository: '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+      - name: Get current repo name
+        id: get_repo_name
+        run: |
+          echo "REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)" >> $GITHUB_OUTPUT
+          echo "ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Set remote directory
+        run: echo "REMOTE_DIR=wp-content/plugins/${{ steps.get_repo_name.outputs.REPO_NAME }}" >> $GITHUB_ENV
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Read .nvmrc
+        id: nvm
+        run: |
+          echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.nvm.outputs.NVMRC }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm i -azvr --inplace --delete --exclude=".*" --exclude-from=.deployignore
+
+      - name: Check Lint formatting
+        run: npm run lint
+
+      - name: Run Automation Tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to WP Engine
+        uses: wpengine/github-action-wpe-site-deploy@v3
+        with:
+          WPE_ENV: ${{ env.WPE_ENV }}
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          SRC_PATH: '${{ env.local-directory }}'
+          REMOTE_PATH: '${{ env.REMOTE_DIR }}'
+          FLAGS: '-azqr --inplace --delete --exclude=".*" --exclude-from=.deployignore'
+          CACHE_CLEAR: true
+
+      # === 🔔 Notify Teams - Deployment Complete ===
+      - name: Notify Teams - Deployment Complete
+        if: success()
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**✅ Deployment to '"$ENVIRONMENT"' Complete**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "Branch: '"$BRANCH"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "Repository: '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+      # === 🔔 Notify Teams - Deployment Failed ===
+      - name: Notify Teams - Deployment Failed
+        if: failure()
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**❌ Deployment to '"$ENVIRONMENT"' Failed**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder",
+                      "color": "Attention"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "Branch: '"$BRANCH"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "Repository: '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}

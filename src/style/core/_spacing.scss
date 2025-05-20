@@ -4,6 +4,11 @@ $base-spacing: 1rem;
 	margin-inline: auto;
 }
 
+@function spacing-multiplier($multiplier : 1) {
+
+	@return $base-spacing * $multiplier;
+}
+
 @mixin spacing($multiplier: 1) {
 	margin: $base-spacing * $multiplier;
 	padding: $base-spacing * $multiplier;
@@ -49,88 +54,14 @@ $base-spacing: 1rem;
 	padding-inline-start: $base-spacing * $multiplier;
 }
 
-
-$spacing-multipliers: (
-	1: 1,
-	2: 2,
-	3: 3
-);
-
-@each $multiplier, $value in $spacing-multipliers {
-	.p-#{$multiplier} {
-
-		@include padding($value);
-	}
-	.m-#{$multiplier} {
-
-		@include margin($value);
-	}
-
-	.mt-#{$multiplier} {
-
-		@include margin-top($value);
-	}
-
-	.mb-#{$multiplier} {
-
-		@include margin-bottom($value);
-	}
-
-	.ml-#{$multiplier} {
-
-		@include margin-left($value);
-	}
-
-	.mr-#{$multiplier} {
-
-		@include margin-right($value);
-	}
-
-	.mx-#{$multiplier} {
-
-		@include margin-left($value);
-		@include margin-right($value);
-	}
-	.my-#{$multiplier} {
-
-		@include margin-top($value);
-		@include margin-bottom($value);
-	}
-
-	.pl-#{$multiplier} {
-
-		@include padding-left($value);
-	}
-
-	.pt-#{$multiplier} {
-
-		@include padding-top($value);
-	}
-
-	.pb-#{$multiplier} {
-
-		@include padding-bottom($value);
-	}
-
-	.pr-#{$multiplier} {
-
-		@include padding-right($value);
-	}
-
-	.px-#{$multiplier} {
-
-		@include padding-left($value);
-		@include padding-right($value);
-	}
-
-	.py-#{$multiplier} {
-
-		@include padding-top($value);
-		@include padding-bottom($value);
-	}
+@mixin padding-block($multiplier: 1) {
+	padding-block: $base-spacing * $multiplier;
 }
 
-.mx-auto {
+@mixin padding-inline($multiplier: 1) {
+	padding-inline: $base-spacing * $multiplier;
+}
 
-	@include margin-auto();
+@mixin margin-block($multiplier: 1) {
+	margin-block: $base-spacing * $multiplier;
 }

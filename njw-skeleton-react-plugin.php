@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Wp React Plugin Skeleton.
  * Plugin URI: https://github.com/snj-adhikari/wp-react-plugin-skeleton
- * Description: A plugin to get report on keywords and also can replace the keywords with a link.
- * Version: 1.2
+ * Description: A getting started template for WordPress plugin development using React and typescript.
+ * Version: 1.0.0
  * Author: Sanjay Adhikari ( Not Just Web )
  * Author URI: https://notjustweb.com/
  * License: GPL2.

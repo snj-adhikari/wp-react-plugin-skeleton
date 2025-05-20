@@ -1,0 +1,265 @@
+name: PR and Deployment Notifications
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  notify-pr:
+    name: Send PR Notification to Teams
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send PR Notification to Teams
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_DESCRIPTION="${{ github.event.pull_request.body }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**🔔 New Pull Request Created**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Branch:** '"$PR_BRANCH"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Title:** '"$PR_TITLE"'",
+                      "wrap": true,
+                      "size": "Medium",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Description:**",
+                      "weight": "Bolder",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "'"$PR_DESCRIPTION"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**PR URL:** [View PR]('"$PR_URL"')",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+  auto-deploy-dev:
+    name: Auto Deploy to aremediaanzdev
+    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+    env:
+      local-directory: ./
+      WPE_ENV: aremediaanzdev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Notify Teams - Deployment Started
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          PR_BRANCH=$(echo '${{ github.event.pull_request.head.ref }}')
+
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**🚀 Deployment Started on DEV**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Branch:** '"$PR_BRANCH"'",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+      - name: Get current repo name
+        id: get_repo_name
+        run: |
+          echo "REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)" >> $GITHUB_OUTPUT
+          echo "ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)" >> $GITHUB_OUTPUT
+          echo "PR_BRANCH=$(echo '${{ github.event.pull_request.head.ref }}')" >> $GITHUB_OUTPUT
+
+      - name: Set remote directory
+        run: echo "REMOTE_DIR=wp-content/plugins/${{ steps.get_repo_name.outputs.REPO_NAME }}" >> $GITHUB_ENV
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Read .nvmrc
+        id: nvm
+        run: |
+          echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.nvm.outputs.NVMRC }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm i -azvr --inplace --delete --exclude=".*" --exclude-from=.deployignore
+
+      - name: Check Lint formatting
+        run: npm run lint
+
+      - name: Run Automation Tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to WP Engine - aremediaanzdev
+        uses: wpengine/github-action-wpe-site-deploy@v3
+        with:
+          WPE_ENV: aremediaanzdev
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          SRC_PATH: '${{ env.local-directory }}'
+          REMOTE_PATH: '${{ env.REMOTE_DIR }}'
+          FLAGS: '-azqr --inplace --delete --exclude=".*" --exclude-from=.deployignore'
+          CACHE_CLEAR: true
+
+      - name: Notify Teams - Deployment Complete
+        if: success()
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          PR_BRANCH=$(echo '${{ github.event.pull_request.head.ref }}')
+
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**✅ Deployment to DEV Complete**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Branch:** '"$PR_BRANCH"'",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+      - name: Notify Teams - Deployment Failed
+        if: failure()
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          PR_BRANCH=$(echo '${{ github.event.pull_request.head.ref }}')
+
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**❌ Deployment to DEV Failed**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder",
+                      "color": "Attention"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Branch:** '"$PR_BRANCH"'",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}

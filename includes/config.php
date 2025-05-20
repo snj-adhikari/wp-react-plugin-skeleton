@@ -23,9 +23,11 @@ function njw_skeleton_define_constant_with_prefix( $constant_name, $value ) {
 	}
 }
 
-njw_skeleton_define_constant_with_prefix( 'NAMESPACE', 'njw-skeleton' ); // Prefix starts with `NJW_SKELETON_'.
-njw_skeleton_define_constant_with_prefix( 'ROUTE', 'api-proxy' ); // Prefix starts with `NJW_SKELETON_' .
-njw_skeleton_define_constant_with_prefix( 'SETTINGS_NAME', 'am-trx-settings' ); // Prefix starts with `NJW_SKELETON_' .
+
+njw_skeleton_define_constant_with_prefix( 'NAMESPACE', 'njw-plugin' ); // Prefix starts with `NJW_SKELETON_'. --> the base namespace would be <site_url>/wp-json/am-aredeals.
+njw_skeleton_define_constant_with_prefix( 'PROXY_ROUTE', 'api-proxy' ); // Prefix starts with `NJW_SKELETON_' . --> the actual proxy that connects to the gateway service would be <site_url>/wp-json/am-aredeals/api-proxy.
+njw_skeleton_define_constant_with_prefix( 'NORMAL_ROUTE', 'v1' ); // Prefix starts with `NJW_SKELETON_' . --> the actual proxy that connects to the gateway service would be <site_url>/wp-json/am-aredeals/api-proxy.
+njw_skeleton_define_constant_with_prefix( 'SETTINGS_NAME', 'njw-settings' ); // Prefix starts with `NJW_SKELETON_'
 
 
 

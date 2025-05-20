@@ -25,3 +25,18 @@ debug.log
 /vendor
 
 
+.DS_Store
+
+# Ignore all phunit result files
+phpunit.result.cache
+phpunit-watcher.log
+phpunit.*.log
+
+.phpunit.result.cache
+.phpunit-watcher.log
+.phpunit.*.log
+
+# Ignore all dist folder, will be added when merged to main.
+/dist
+/dist/*
+!.gitkeep

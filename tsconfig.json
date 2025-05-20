@@ -1,8 +1,8 @@
 {
 	"compilerOptions": {
+		"jsx": "react",
 		"target": "es2017",
 		"module": "esnext",
-		"jsx": "react",
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,

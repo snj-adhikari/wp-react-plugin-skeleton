@@ -33,15 +33,15 @@ function njw_skeleton__add_admin_menu() {
  */
 function njw_skeleton__settings_init() {
 
-	register_setting( 'NJW_Skeleton_Plugin_page', 'njw_skeleton__settings' );
-	register_setting( 'NJW_Skeleton_Plugin_page', 'njw_skeleton__api-settings' );
+	register_setting( 'NJW_SK_Plugin_page', 'njw_skeleton__settings' );
+	register_setting( 'NJW_SK_Plugin_page', 'njw_skeleton__api-settings' );
 
 
 	add_settings_section(
-		'NJW_Skeleton_Plugin_page_section',
+		'NJW_SK_Plugin_page_section',
 		__( 'NJW Skeleton - Settings ', 'njw-skeleton' ),
 		'njw_skeleton__settings_section_callback',
-		'NJW_Skeleton_Plugin_page',
+		'NJW_SK_Plugin_page',
 	);
 }
 
@@ -80,7 +80,7 @@ function njw_skeleton_options_settings_field() {
 				$setting_name = njw_skeleton_api_config( 'SETTINGS_NAME' );
 				$current_name = $setting_name . '[' . $constant . ']';
 			?>
-			<div class="njw-skl-field <?php echo esc_attr( $constant ); ?>">
+			<div class="njw-skeleton-field <?php echo esc_attr( $constant ); ?>">
 				<label><?php echo esc_html( $constant_label ); ?> </label> &nbsp; &nbsp;
 				<input type="text" name="<?php echo esc_attr( $current_name ); ?>" value="<?php echo esc_attr( $config_value[ $constant ] ); ?>"/>
 			</div>
@@ -106,8 +106,8 @@ function njw_skeleton__options_page() {
 			<form action='options.php' method='post'>
 
 				<?php
-				settings_fields( 'NJW_Skeleton_Plugin_page' );
-				do_settings_sections( 'NJW_Skeleton_Plugin_page' );
+				settings_fields( 'NJW_SK_Plugin_page' );
+				do_settings_sections( 'NJW_SK_Plugin_page' );
 				submit_button();
 				?>
 

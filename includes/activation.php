@@ -14,23 +14,14 @@
  *
  * @since 1.0.0
  */
-function wp_skeleton_enqueue_frontend_assets() {
+function njw_skeleton_enqueue_frontend_assets() {
 
-	$asset_file_path = njw_skeleton_get_config( 'PLUGIN_DIR_PATH' ) . 'dist/frontend.asset.php';
-	// Check if the file exists, if not, set default values.
-	$asset_file = [
-		'dependencies' => [],
-		'version'      => '1.0.0',
-	];
+	$asset_file = njw_skeleton_load_asset_file( njw_skeleton_get_config( 'PLUGIN_DIR_PATH' ) . 'dist/frontend.asset.php' );
 
-	if ( file_exists( $asset_file_path ) ) {
-		$asset_file = include $asset_file_path;
-	}
-
-	wp_enqueue_script( 'frontend-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/frontend.js', $asset_file['dependencies'], $asset_file['version'], true );
-	wp_enqueue_style( 'frontend-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/frontend.css', [], $asset_file['version'] );
+	wp_enqueue_script( 'NJW-frontend-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/frontend.js', $asset_file['dependencies'], $asset_file['version'], true );
+	wp_enqueue_style( 'NJW-frontend-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/frontend.css', [], $asset_file['version'] );
 }
-add_action( 'wp_enqueue_scripts', 'wp_skeleton_enqueue_frontend_assets' );
+add_action( 'wp_enqueue_scripts', 'njw_skeleton_enqueue_frontend_assets' ); // Anything that is not part of block and need to run on frontend.
 
 /**
  * Enqueues the necessary admin assets for the WP Skeleton React plugin.
@@ -40,20 +31,13 @@ add_action( 'wp_enqueue_scripts', 'wp_skeleton_enqueue_frontend_assets' );
  *
  * @since 1.0.0
  */
-function wp_skeleton_enqueue_admin_assets() {
-	$asset_file_path = njw_skeleton_get_config( 'PLUGIN_DIR_PATH' ) . 'dist/blocks.asset.php';
-	$asset_file      = [
-		'dependencies' => [],
-		'version'      => '1.0.0',
-	];
-
-	if ( file_exists( $asset_file_path ) ) {
-		$asset_file = include $asset_file_path;
-	}
-	wp_enqueue_script( 'admin-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/blocks.js', $asset_file['dependencies'], $asset_file['version'], true );
-	wp_enqueue_style( 'admin-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/blocks.css', [], $asset_file['version'] );
+function njw_skeleton_enqueue_block_assets() {
+	$asset_file = njw_skeleton_load_asset_file( njw_skeleton_get_config( 'PLUGIN_DIR_PATH' ) . 'dist/blocks.asset.php' );
+	wp_enqueue_script( 'NJW-block-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/blocks.js', $asset_file['dependencies'], $asset_file['version'], true );
+	wp_enqueue_style( 'NJW-block-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/blocks.css', [], $asset_file['version'] );
 }
-add_action( 'admin_enqueue_scripts', 'wp_skeleton_enqueue_admin_assets' );
+add_action( 'admin_enqueue_scripts', 'njw_skeleton_enqueue_block_assets' ); // It will be used in the admin area.
+add_action( 'wp_enqueue_scripts', 'njw_skeleton_enqueue_block_assets' ); // It will be used in the frontend area.
 
 /**
  * Enqueues the necessary assets for the WP Skeleton React plugin option page.
@@ -63,23 +47,15 @@ add_action( 'admin_enqueue_scripts', 'wp_skeleton_enqueue_admin_assets' );
  *
  * @since 1.0.0
  */
-function wp_skeleton_enqueue_cms_page_assets() {
+function njw_skeleton_enqueue_admin_page_assets() {
 	// phpcs:ignore
 	if ( isset( $_GET['page'] ) && $_GET['page'] === 'wp-skeleton-page' ) {
-		$asset_file_path = njw_skeleton_get_config( 'PLUGIN_DIR_PATH' ) . 'dist/cms.asset.php';
-		$asset_file      = [
-			'dependencies' => [],
-			'version'      => '1.0.0',
-		];
-
-		if ( file_exists( $asset_file_path ) ) {
-			$asset_file = include $asset_file_path;
-		}
-		wp_enqueue_script( 'cms-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/cms.js', $asset_file['dependencies'], $asset_file['version'], true );
-		wp_enqueue_style( 'cms-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/cms.css', [], $asset_file['version'] );
+		$asset_file = njw_skeleton_load_asset_file( njw_skeleton_get_config( 'PLUGIN_DIR_PATH' ) . 'dist/cms.asset.php');
+		wp_enqueue_script( 'NJW-admin-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/cms.js', $asset_file['dependencies'], $asset_file['version'], true );
+		wp_enqueue_style( 'NJW-admin-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/cms.css', [], $asset_file['version'] );
 	}
 }
-add_action( 'admin_enqueue_scripts', 'wp_skeleton_enqueue_cms_page_assets' );
+add_action( 'admin_enqueue_scripts', 'njw_skeleton_enqueue_admin_page_assets' );
 
 /**
  * Enqueues the necessary assets for the WP Skeleton React plugin option page.
@@ -89,32 +65,18 @@ add_action( 'admin_enqueue_scripts', 'wp_skeleton_enqueue_cms_page_assets' );
  *
  * @since 1.0.0
  */
-function wp_skeleton_enqueue_option_page_assets() {
+function njw_skeleton_enqueue_option_page_assets() {
 	// phpcs:ignore
 	if ( isset( $_GET['page'] ) && $_GET['page'] === 'njw_skeleton' ) {
-		$asset_file_path = njw_skeleton_get_config( 'PLUGIN_DIR_PATH' ) . 'dist/option-page.asset.php';
-		$asset_file      = [
-			'dependencies' => [],
-			'version'      => '1.0.0',
-		];
-
-		if ( file_exists( $asset_file_path ) ) {
-			$asset_file = include $asset_file_path;
-		}
-		wp_enqueue_script( 'option-page-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/option-page.js', $asset_file['dependencies'], $asset_file['version'], true );
-		wp_enqueue_style( 'option-page-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/option-page.css', [], $asset_file['version'] );
+		$asset_file = njw_skeleton_load_asset_file( njw_skeleton_get_config( 'PLUGIN_DIR_PATH' ) . 'dist/option-page.asset.php');
+		
+		wp_enqueue_script( 'NJW-option-page-script', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/NJW-option-page.js', $asset_file['dependencies'], $asset_file['version'], true );
+		wp_enqueue_style( 'NJW-option-page-style', njw_skeleton_get_config( 'PLUGIN_DIR_URL' ) . 'dist/NJW-option-page.css', [], $asset_file['version'] );
 	}
 }
-add_action( 'admin_enqueue_scripts', 'wp_skeleton_enqueue_option_page_assets' );
+add_action( 'admin_enqueue_scripts', 'njw_skeleton_enqueue_option_page_assets' );
 
-/**
- * Enqueue editor script.
- */
-function njw_skeleton_editor_script() {
-	$asset_file = include njw_skeleton_api_config( 'PLUGIN_DIR_PATH' ) . 'dist/editor.asset.php';
-	wp_enqueue_script( 'njw-skeleton-editor-script', njw_skeleton_api_config( 'PLUGIN_DIR_URL' ) . 'dist/editor.js', $asset_file['dependencies'], $asset_file['version'], true );
-}
-add_action( 'enqueue_block_editor_assets', 'njw_skeleton_editor_script' );
+
 
 /**
  * Adds a custom menu page to the WordPress admin area.
@@ -146,6 +108,6 @@ add_action( 'admin_menu', 'wp_skeleton_add_custom_menu_page' );
  * @since 1.0.0
  */
 function wp_skeleton_custom_page_callback() {
-	echo '<div id="skeleton-react-plugin-page"></div>';
+	echo '<div id="njw-skeleton-react-plugin-page"></div>';
 	// Add your custom page content here.
 }

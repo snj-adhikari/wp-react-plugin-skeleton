@@ -5,13 +5,9 @@ const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 module.exports = {
 	...defaultConfig,
 	entry: {
-		cms: [
+		admin: [
 			'./src/cms/index.tsx',
-			'./src/style/cms.scss',
-		],
-		editor: [
-			'./src/editor/index.ts',
-			'./src/style/editor.scss',
+			'./src/style/admin.scss',
 		],
 		'option-page': [
 			'./src/option-page/index.ts',

@@ -1,0 +1,17 @@
+
+// This will import the tailwindcss styles and the core styles.
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+// This will import the core styles and the base styles.
+@import "core/base-init";
+
+
+// import all the components here.
+@import "components/header-panel"; // --> Just an example
+
+
+
+// Import all the pages here.
+@import "pages/dashboard"; // --> Just an example

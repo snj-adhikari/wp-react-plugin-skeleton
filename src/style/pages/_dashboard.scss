@@ -1,0 +1,18 @@
+.njw-skeleton-dashboard {
+	margin-inline-start: - rem(16);
+	min-block-size: 100vh;
+
+	&__content {
+		padding: rem(20) rem(25);
+	}
+
+	.ant-table-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.ant-table-thead .ant-table-cell {
+		text-transform: uppercase;
+	}
+}

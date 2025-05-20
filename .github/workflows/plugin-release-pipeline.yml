@@ -1,0 +1,550 @@
+name: Merge, Build, Release, and Update Express Repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  merge-and-build:
+    name: Merge and Build Production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      # === 🔔 Merge and Build Started to Push on Production ===
+      - name: Merge and Build Started to Push on Production
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**🚀 Merge and Build Started to Push on Production**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Branch:** main",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Checkout production branch
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git fetch origin
+          git checkout production
+          git pull origin production
+
+      - name: Merge main into production
+        run: |
+          git checkout main
+          git pull origin main
+          git checkout production
+          git merge main -X theirs --allow-unrelated-histories || git merge main -X theirs
+
+      - name: Delete existing dist folder
+        run: rm -rf dist
+
+      - name: Build project
+        run: npm run build
+
+      - name: Ensure dist folder is not ignored in .gitignore
+        run: |
+          sed -i '/^\/dist/d' .gitignore
+          sed -i '/^\/dist\/*/d' .gitignore
+
+      - name: Commit dist folder and updated .gitignore
+        run: |
+          git add dist .gitignore
+          git commit -m 'Add dist folder and update .gitignore for production'
+
+      - name: Push changes to production
+        env:
+          GITHUB_TOKEN: ${{ secrets.AREMEDIA_PERSONAL_ACCESS_TOKEN }}
+        run: git push origin production --no-verify
+
+      # === 🔔 Notify Teams - Merge and Build Failed ===
+      - name: Notify Teams - Merge and Build Failed
+        if: failure()
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**❌ Merge and Build Failed**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder",
+                      "color": "Attention"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    },
+                                        {
+                      "type": "TextBlock",
+                      "text": "**Branch:** production",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+  create-release:
+    needs: merge-and-build
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    if: always() && needs.merge-and-build.result == 'success'
+
+    outputs:
+      release_version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+      - name: Checkout production branch
+        uses: actions/checkout@v4
+        with:
+          ref: production
+
+      # === 🔔 Notify Teams - Create GitHub Release Started ===
+      - name: Notify Teams - Create GitHub Release Started
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**🚀 Creating GitHub Release Started**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    },
+                                        {
+                      "type": "TextBlock",
+                      "text": "**Branch:** production",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Get version from composer.json
+        id: get_version
+        run: |
+          VERSION=$(jq -r '.version' composer.json)
+          echo "VERSION=$VERSION"
+          if [[ -z "$VERSION" ]]; then
+            echo "Version not found in composer.json"
+            exit 1
+          fi
+          echo "version=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Ensure GitHub CLI is installed
+        run: |
+          if ! command -v gh &> /dev/null; then
+            sudo apt update
+            sudo apt install gh -y
+          fi
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Check if tag and release already exist
+        env:
+          GITHUB_TOKEN: ${{ secrets.AREMEDIA_PERSONAL_ACCESS_TOKEN }}
+        run: |
+          TAG_NAME=${{ steps.get_version.outputs.version }}
+          RELEASE_EXISTS=$(gh release view $TAG_NAME --json id --jq '.id' || echo "")
+          TAG_EXISTS=$(git ls-remote --tags origin refs/tags/$TAG_NAME)
+          if [ -n "$RELEASE_EXISTS" ] || [ -n "$TAG_EXISTS" ]; then
+            echo "❌ A release or tag with version $TAG_NAME already exists."
+            exit 1
+          fi
+
+      - name: Create and push new tag
+        run: |
+          git tag ${{ steps.get_version.outputs.version }}
+          git push origin ${{ steps.get_version.outputs.version }}
+
+      - name: Generate release notes
+        id: generate_notes
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.AREMEDIA_PERSONAL_ACCESS_TOKEN }}
+          script: |
+            const version = process.env.VERSION || '${{ steps.get_version.outputs.version }}';
+            const releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 1
+            });
+            const previousTag = releases.data.length > 0 ? releases.data[0].tag_name : null;
+
+            let notes = `## Changes in ${version}\n`;
+
+            if (previousTag) {
+              const compare = await github.rest.repos.compareCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base: previousTag,
+                head: version
+              });
+
+              notes += compare.data.commits.map(c => `- ${c.commit.message} (${c.sha.slice(0,7)})`).join('\n');
+            } else {
+              notes += 'Initial release or no previous tag to compare.';
+            }
+
+            core.setOutput('notes', notes);
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          name: Release ${{ steps.get_version.outputs.version }}
+          body: ${{ steps.generate_notes.outputs.notes }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.AREMEDIA_PERSONAL_ACCESS_TOKEN }}
+
+      # === 🔔 Notify Teams - Create GitHub Release Failed ===
+      - name: Notify Teams - Create GitHub Release Failed
+        if: failure()
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**❌ GitHub Release Failed**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder",
+                      "color": "Attention"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+  update-express-repo:
+    needs: create-release
+    name: Update Express Repo
+    runs-on: ubuntu-latest
+    if: always() && needs.create-release.result == 'success'
+
+    steps:
+      # === 🔔 Notify Teams - Update Express Repo Started ===
+      - name: Notify Teams - Update Express Repo Started
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          VERSION="${{ needs.create-release.outputs.release_version }}"
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**🚀 Updating Express Repo Started**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** '"$ORG_NAME/$REPO_NAME"'",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Version:** '"$VERSION"'",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AREMEDIA_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cat <<EOF > ~/.ssh/config
+          Host github.com
+            HostName github.com
+            User git
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          EOF
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Checkout express repo using SSH
+        uses: actions/checkout@v4
+        with:
+          repository: bauerxcelmedia/express
+          ssh-key: ${{ secrets.AREMEDIA_SSH_PRIVATE_KEY }}
+          ref: main
+          path: express
+
+      - name: Configure Git User
+        run: |
+          git config --global user.email "digitaldevelopers@aremedia.com.au"
+          git config --global user.name "AreMedia CI Bot"
+
+      - name: Set metadata
+        run: |
+          REPO_SLUG="${{ github.repository }}"
+          PACKAGE_NAME="${REPO_SLUG#*/}"
+          VENDOR_NAME="${REPO_SLUG%%/*}"
+          FULL_PACKAGE="$VENDOR_NAME/$PACKAGE_NAME"
+          VERSION="${{ needs.create-release.outputs.release_version }}"
+          BRANCH_NAME="feature/update-${PACKAGE_NAME}-${VERSION}"
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+          echo "VENDOR_NAME=$VENDOR_NAME" >> $GITHUB_ENV
+          echo "FULL_PACKAGE=$FULL_PACKAGE" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Create feature branch
+        working-directory: express
+        run: git checkout -b "$BRANCH_NAME"
+
+      - name: Set up PHP with Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+
+      - name: Configure Composer VCS with SSH URLs
+        working-directory: express
+        run: |
+          composer config repositories.${{ env.PACKAGE_NAME }} vcs "git@github.com:${{ github.repository }}.git"
+
+      - name: Clear Composer cache
+        working-directory: express
+        run: composer clear-cache
+
+      - name: Require and update plugin
+        working-directory: express
+        run: |
+          composer require ${{ env.FULL_PACKAGE }}:${{ env.VERSION }} --no-update
+          composer update ${{ env.FULL_PACKAGE }} --no-install
+
+      - name: Check for composer.lock changes
+        id: check_changes
+        working-directory: express
+        run: |
+          git add composer.json composer.lock
+          if ! git diff --cached --quiet; then
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes_detected=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit composer.lock
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        working-directory: express
+        run: |
+          git commit -m "release: update ${{ env.FULL_PACKAGE }} to ${{ env.VERSION }}"
+
+      - name: Push feature branch
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        working-directory: express
+        run: git push origin ${{ env.BRANCH_NAME }}
+
+      - name: Create PR
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          cd express
+          gh pr create \
+            --repo bauerxcelmedia/express \
+            --title "release: update ${{ env.FULL_PACKAGE }} to ${{ env.VERSION }}" \
+            --body "This PR updates \`${{ env.FULL_PACKAGE }}\` to version \`${{ env.VERSION }}\` in the \`composer.lock\` file." \
+            --base main \
+            --head ${{ env.BRANCH_NAME }}
+        env:
+          GH_TOKEN: ${{ secrets.AREMEDIA_PERSONAL_ACCESS_TOKEN }}
+
+      # === 🔔 Notify Teams - Update Express Repo Complete ===
+      - name: Notify Teams - Update Express Repo Complete
+        if: success()
+        run: |
+          BRANCH_URL="https://github.com/bauerxcelmedia/express/tree/${{ env.BRANCH_NAME }}"
+          PR_URL="https://github.com/bauerxcelmedia/express/pulls"
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**✅ Update Express Repo Complete**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Branch:** [${{ env.BRANCH_NAME }}]('"$BRANCH_URL"')",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Pull Requests:** [View PRs]('"$PR_URL"')",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}
+
+      # === 🔔 Notify Teams - Update Express Repo Failed ===
+      - name: Notify Teams - Update Express Repo Failed
+        if: failure()
+        run: |
+          REPO_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)
+          ORG_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f1)
+          REPO_URL="https://github.com/$ORG_NAME/$REPO_NAME"
+
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**❌ Update Express Repo Failed**",
+                      "wrap": true,
+                      "size": "Large",
+                      "weight": "Bolder",
+                      "color": "Attention"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "**Repository:** [${ORG_NAME}/${REPO_NAME}]('"$REPO_URL"')",
+                      "wrap": true
+                    },
+                  ]
+                }
+              }
+            ]
+          }' \
+          ${{ secrets.TEAMS_CODE_REVIEW_WEBHOOK }}

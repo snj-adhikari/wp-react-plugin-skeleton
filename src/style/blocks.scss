@@ -1,3 +1,5 @@
-.blocks {
-	margin: 0;
-}
+@import 'core/base-init';
+
+
+// Import all the blocks style here.
+@import "component/blocks/njw-skeleton-sample-block"; // --> Just an example

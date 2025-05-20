@@ -20,7 +20,7 @@ add_action(
 		// accept 1 path.
 		register_rest_route(
 			njw_skeleton_get_config( 'NAMESPACE' ),
-			njw_skeleton_get_config( 'ROUTE' ) . '/(?P<one>[^/]+)',
+			njw_skeleton_get_config( 'PROXY_ROUTE' ) . '/(?P<one>[^/]+)',
 			[
 				'methods'             => [ 'GET', 'POST', 'PUT', 'DELETE' ],
 				'callback'            => 'njw_skeleton_api_proxy',
@@ -30,59 +30,72 @@ add_action(
 		// accept 2 paths.
 		register_rest_route(
 			njw_skeleton_get_config( 'NAMESPACE' ),
-			njw_skeleton_get_config( 'ROUTE' ) . '/(?P<one>[^/]+)/(?P<two>[^/]+)',
+			njw_skeleton_get_config( 'PROXY_ROUTE' ) . '/(?P<one>[^/]+)/(?P<two>[^/]+)',
 			[
 				'methods'             => [ 'GET', 'POST', 'PUT', 'DELETE' ],
 				'callback'            => 'njw_skeleton_api_proxy',
 				'permission_callback' => '__return_true',
 			]
 		);
-		// accept 3 paths.
+
+
 		register_rest_route(
-			njw_skeleton_get_config( 'NAMESPACE' ),
-			njw_skeleton_get_config( 'ROUTE' ) . '/(?P<one>[^/]+)/(?P<two>[^/]+)/(?P<three>[^/]+)',
+			am_arelink_get_config( 'NAMESPACE' ),
+			am_arelink_get_config( 'NORMAL_ROUTE' ) . '/check',
 			[
-				'methods'             => [ 'GET', 'POST', 'PUT', 'DELETE' ],
-				'callback'            => 'njw_skeleton_api_proxy',
-				'permission_callback' => '__return_true',
+				'methods'             => 'GET',
+				'callback'            => 'njw_normal_route_check',
+				'permission_callback' => '__return_true', // Adjust permissions as needed.
 			]
 		);
-		// accept 4 paths.
-		register_rest_route(
-			njw_skeleton_get_config( 'NAMESPACE' ),
-			njw_skeleton_get_config( 'ROUTE' ) . '/(?P<one>[^/]+)/(?P<two>[^/]+)/(?P<three>[^/]+)/(?P<four>[^/]+)',
-			[
-				'methods'             => [ 'GET', 'POST', 'PUT', 'DELETE' ],
-				'callback'            => 'njw_skeleton_api_proxy',
-				'permission_callback' => '__return_true',
-			]
-		);
-		// accept 5 paths.
-		register_rest_route(
-			njw_skeleton_get_config( 'NAMESPACE' ),
-			njw_skeleton_get_config( 'ROUTE' ) . '/(?P<one>[^/]+)/(?P<two>[^/]+)/(?P<three>[^/]+)/(?P<four>[^/]+)/(?P<five>[^/]+)',
-			[
-				'methods'             => [ 'GET', 'POST', 'PUT', 'DELETE' ],
-				'callback'            => 'njw_skeleton_api_proxy',
-				'permission_callback' => '__return_true',
-			]
-		);
+
 	}
 );
 
+
 /**
- * Get the gateway endpoint from the proxy url.
- * the endpoint should be everything after /aremedia-trial-team/api-proxy/.
- * eg: if URL is https://beautyheaven.com.au/wp-json/aremedia-trial-team/api-proxy/trials/23, then endpoint will be "/trials/23".
+ * Validates and returns JSON data.
  *
- * @param string $proxy_url The URL of the proxy.
- * @return string The endpoint of the proxy URL.
+ * This function checks if the provided text is valid JSON and returns it.
+ *
+ * @param string $text The text to be validated.
+ * @param bool   $is_json Whether the text is JSON or not.
+ * @return mixed The validated JSON data or an error message.
  */
-function njw_skeleton_gateway_endpoint( $proxy_url ) {
-	$path     = '/' . njw_skeleton_get_config( 'NAMESPACE' ) . '/' . njw_skeleton_get_config( 'ROUTE' ) . '/';
-	$endpoint = strstr( $proxy_url, $path );
-	return str_replace( $path, '', $endpoint );
+function njw_skeleton_send_wp_response( $response, $status = 200 ) {
+	if ( is_array( $response ) || is_object( $response ) ) {
+		$response = wp_json_encode( $response );
+	}
+
+	return new WP_REST_Response( $response, $status );
 }
+
+
+
+/**
+ * Handles the normal route check.
+ *
+ * This function is a placeholder for a normal route check.
+ *
+ * @param WP_REST_Request $request The request object.
+ * @return WP_REST_Response The response object.
+ */
+function njw_skeleton_normal_route_check( $request ) {
+	$method = $request->get_method();
+	$body   = $request->get_body();
+	$header = $request->get_headers();
+
+	$response = [
+		'method' => $method,
+		'body'   => $body,
+		'header' => $header,
+	];
+
+	return njw_skeleton_send_wp_response( $response, 200 );
+}
+
+
+
 
 /**
  * Proxies the API request to the Trackonomics API.
@@ -154,7 +167,7 @@ function njw_skeleton_api_proxy( $req ) {
 			}
 		}
 		// response.
-		$result = new WP_REST_Response( njw_skeleton_json_validate_and_return( $response ), $http_status );
+		$result = njw_skeleton_send_wp_response( njw_skeleton_json_validate_and_return( $response ), $http_status );
 
 		// Set headers.
 		$result->header( 'Cache-Control', 'no-cache' );
@@ -162,6 +175,6 @@ function njw_skeleton_api_proxy( $req ) {
 		return $result;
 
 	} catch ( Exception $err ) {
-		wp_send_json( $err->getMessage(), $err->getCode() );
+		njw_skeleton_send_wp_response( ['msg' => $err->getMessage()], $err->getCode() );
 	}
 }
